@@ -83,13 +83,6 @@ To run any of the example client apps locally follow these steps.
    ```
    npm run build
    ```
-5. Enter your Environment ID and the API key in any of the example projects
-
-   ```js
-   const ENV_ID = 'ENTER YOUR ENVIRONMENT ID';
-   const API_KEY = 'ENTER YOUR API KEY';
-   ```
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
