@@ -1,6 +1,6 @@
 <a name="readme-top"></a>
 
-![Build Status][build-shield]
+[![Build Status][build-shield]][build-url]
 [![Npmjs][npmjs-shield]][npmjs-url]
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
@@ -248,6 +248,8 @@ Website Link: [https://www.flagsio.com/](https://www.flagsio.com/)
 <!-- TODO -->
 
 [build-shield]: https://dev.azure.com/flagsio/js-sdk/_apis/build/status/flagsio.js-sdk?branchName=fmain
+
+[build-url]: #
 
 [npmjs-shield]: https://img.shields.io/npm/dm/flagsio-js-sdk.svg
 
