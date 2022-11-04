@@ -16,7 +16,7 @@
 
 <div align="center">
 
-<h3>JavaScript SDK</h3>
+<h3>Flagsio JavaScript SDK</h3>
 
   <p align="center">
     A JavaScript & TypeScript SDK for NodeJS and Browser Clients 
@@ -97,7 +97,7 @@ Import SDK
 
 ```js
 // /browser path contains a polyfilled bundle of the SDK for browsers 
-import FlagsioSdk from "@flagsio/flagsio-sdk/browser"; 
+import FlagsioSdk from "flagsio-js-sdk/browser"; 
 ```
 
 Connect once in the entry point of your app
@@ -131,7 +131,7 @@ Import SDK
 
 ```js
 // root path contains a bundle of the SDK for NodeJS 
-import FlagsioSdk from "@flagsio/flagsio-sdk"; 
+import FlagsioSdk from "flagsio-js-sdk"; 
 ```
 
 Connect once in the entry point of your app

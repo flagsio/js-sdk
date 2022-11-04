@@ -1,0 +1,13 @@
+{
+  "name": "nodejs-js-client",
+  "version": "0.0.0",
+  "description": "nodejs-js-client",
+  "main": "app.js",
+  "type": "module",
+  "author": {
+    "name": ""
+  },
+  "dependencies": {
+    "flagsio-js-sdk": "file:../../dist"
+  }
+}
