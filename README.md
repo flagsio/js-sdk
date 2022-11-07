@@ -247,7 +247,7 @@ Website Link: [https://www.flagsio.com/](https://www.flagsio.com/)
 
 <!-- TODO -->
 
-[build-shield]: https://dev.azure.com/flagsio/js-sdk/_apis/build/status/flagsio.js-sdk?branchName=fmain
+[build-shield]: https://dev.azure.com/flagsio/js-sdk/_apis/build/status/flagsio.js-sdk?branchName=main&stageName=Build
 
 [build-url]: #
 
