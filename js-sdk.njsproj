@@ -40,9 +40,6 @@
         <Content Include="LICENSE.txt" />
         <Content Include="package-lock.json" />
         <Content Include="PULL_REQUEST_TEMPLATE.md" />
-        <Content Include="src\package.json">
-            <SubType>Code</SubType>
-        </Content>
         <Content Include="tsconfig.json">
             <SubType>Code</SubType>
         </Content>
@@ -74,6 +71,7 @@
         <Script Include="src\models\Rule.ts" />
         <Script Include="src\models\Target.ts" />
         <Script Include="src\utilities\calculateProbability.ts" />
+        <Script Include="src\utilities\evaluateCondition.test.ts" />
         <Script Include="src\utilities\evaluateCondition.ts" />
         <Script Include="src\utilities\index.ts" />
     </ItemGroup>

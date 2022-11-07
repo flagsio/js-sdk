@@ -1,5 +1,5 @@
 const path = require('path');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const FileManagerPlugin = require('filemanager-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
@@ -9,7 +9,6 @@ const getCommonConfig = (outputFileName) => ({
 
     entry: './src/index.ts',
     mode: "development",
-    devtool: "source-map",
     output: {
         filename: outputFileName,
         path: path.resolve(__dirname, "dist"),
@@ -51,15 +50,19 @@ const browserConfig = {
                 mode: 'write-dts',
             },
         }),
-        new CopyWebpackPlugin({
-            patterns: [
-                { from: "./src/package.json", to: "../dist/package.json" }
-            ]
-        }),
         new ESLintPlugin({
             extensions: ['.tsx', '.ts', '.js'],
             exclude: 'node_modules'
-        })
+        }),
+        new FileManagerPlugin({
+            events: {
+                onEnd: {
+                    copy: [
+                        { source: "package.json", destination: "dist/package.json" },
+                    ],
+                },
+            },
+        }),
 
     ]
 };
@@ -75,22 +78,25 @@ const nodeConfig = {
         new ForkTsCheckerWebpackPlugin({
             typescript: {
                 build: true,
-                mode: 'write-dts',
+                mode: 'write-dts'                
             },
-        }),
-        new CopyWebpackPlugin({
-            patterns: [
-                { from: "./src/package.json", to: "../dist/package.json" },
-                { from: "./dist/index.d.ts", to: "../dist/browser.d.ts" }
-            ]
         }),
         new ESLintPlugin({
             extensions: ['.tsx', '.ts', '.js'],
             exclude: 'node_modules'
-        })
-
+        }),
+        new FileManagerPlugin({
+            events: {
+                onEnd: {
+                    copy: [
+                        {source: "package.json", destination: "dist/package.json"},
+                        {source: "dist/index.d.ts", destination: 'dist/browser.d.ts'},
+                        {source: "README.md", destination: 'dist/README.md'},
+                    ],
+                },
+            },
+        }),
     ]
 };
 
-module.exports = [nodeConfig, browserConfig];
-module.exports.parallelism = 2;
+module.exports = [browserConfig, nodeConfig];

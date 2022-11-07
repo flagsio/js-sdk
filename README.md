@@ -251,9 +251,9 @@ Website Link: [https://www.flagsio.com/](https://www.flagsio.com/)
 
 [build-url]: #
 
-[npmjs-shield]: https://img.shields.io/npm/dm/flagsio-js-sdk.svg
+[npmjs-shield]: https://img.shields.io/npm/dm/@flagsio/js-sdk.svg
 
-[npmjs-url]: https://npmjs.com/package/flagsio-js-sdk
+[npmjs-url]: https://npmjs.com/package/@flagsio/js-sdk
 
 [contributors-shield]: https://img.shields.io/github/contributors/flagsio/js-sdk.svg
 
