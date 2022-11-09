@@ -38,6 +38,7 @@
 - [Getting started](#getting-started)
     - [Prerequisites](#prerequisites)
     - [Installation](#installation)
+    - [Local development](#local-development)
 - [Usage](#usage)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
@@ -67,19 +68,31 @@ To run any of the example client apps locally follow these steps.
   ```sh
   npm install npm@latest -g
   ```
+* Create a free account at [https://app.flagsio.com/signup](https://app.flagsio.com/signup)
 
 ### Installation
 
-1. Create a free account at [https://app.flagsio.com/signup](https://app.flagsio.com/signup)
-2. Clone the repo
+1. Install the SDK package
+   ```sh
+   npm install @flagsio/js-sdk
+   ```
+2. Build
+   ```
+   npm run build
+   ```
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+### Local development
+
+1. Clone the repo
    ```sh
    git clone https://github.com/flagsio/js-sdk.git
    ```
-3. Install NPM packages
+2. Install NPM packages
    ```sh
    npm install
    ```
-4. Build
+3. Build
    ```
    npm run build
    ```
@@ -97,7 +110,7 @@ Import SDK
 
 ```js
 // /browser path contains a polyfilled bundle of the SDK for browsers 
-import FlagsioSdk from "flagsio-js-sdk/browser"; 
+import FlagsioSdk from "@flagsio/js-sdk/browser"; 
 ```
 
 Connect once in the entry point of your app
@@ -131,7 +144,7 @@ Import SDK
 
 ```js
 // root path contains a bundle of the SDK for NodeJS 
-import FlagsioSdk from "flagsio-js-sdk"; 
+import FlagsioSdk from "@flagsio/js-sdk"; 
 ```
 
 Connect once in the entry point of your app
