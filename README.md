@@ -80,6 +80,7 @@ To run any of the example client apps locally follow these steps.
    ```
    npm run build
    ```
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Local development
@@ -96,6 +97,7 @@ To run any of the example client apps locally follow these steps.
    ```
    npm run build
    ```
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
@@ -110,7 +112,7 @@ Import SDK
 
 ```js
 // /browser path contains a polyfilled bundle of the SDK for browsers 
-import FlagsioSdk from "@flagsio/js-sdk/browser"; 
+import {connect, hasFeature} from "@flagsio/js-sdk/browser"; 
 ```
 
 Connect once in the entry point of your app
@@ -121,15 +123,24 @@ Connect once in the entry point of your app
 const ENV_ID = 'ENTER YOUR ENVIRONMENT ID';
 const API_KEY = 'ENTER YOUR API KEY';
 
-FlagsioSdk.connect(ENV_ID, API_KEY, {
-    debug: true, // enabling will print logs to the console during runtime
+connect(ENV_ID, API_KEY, {
+    // optional configs
+    debug: true, // enabe to print logs in the console
+    logger: (msg) => {
+        // optional logger override
+        console.debug(msg);
+    },
+    on: (status: string) => {
+        // optional connection status callback
+        console.log("Connection status:", status);
+    }
 });
 ```
 
 Anywhere in your application
 
 ```js
-const isEnabled = FlagsioSdk.hasFeature("example-feature", false);
+const isEnabled = hasFeature("example-feature", false);
 
 if (isEnabled) {
     // do something when example feature is enabled
@@ -144,7 +155,7 @@ Import SDK
 
 ```js
 // root path contains a bundle of the SDK for NodeJS 
-import FlagsioSdk from "@flagsio/js-sdk"; 
+import {connect, hasFeature} from "@flagsio/js-sdk"; 
 ```
 
 Connect once in the entry point of your app
@@ -155,15 +166,24 @@ Connect once in the entry point of your app
 const ENV_ID = 'ENTER YOUR ENVIRONMENT ID';
 const API_KEY = 'ENTER YOUR API KEY';
 
-FlagsioSdk.connect(ENV_ID, API_KEY, {
-    debug: true, // enabling will print logs to the console during runtime
+connect(ENV_ID, API_KEY, {
+    // optional configs
+    debug: true, // enabe to print logs in the console
+    logger: (msg) => {
+        // optional logger override
+        console.debug(msg);
+    },
+    on: (status: string) => {
+        // optional connection status callback
+        console.log("Connection status:", status);
+    }
 });
 ```
 
 Anywhere in your application
 
 ```js
-const isEnabled = FlagsioSdk.hasFeature("example-feature", false);
+const isEnabled = hasFeature("example-feature", false);
 
 if (isEnabled) {
     // do something when example feature is enabled

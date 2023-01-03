@@ -1,0 +1,21 @@
+﻿<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="nodejs-ts-client" type="NodeJSConfigurationType" path-to-js-file="app.js" working-dir="$PROJECT_DIR$/examples/nodejs-ts-client">
+    <method v="2">
+      <option name="NpmBeforeRunTask" enabled="true">
+        <package-json value="$PROJECT_DIR$/examples/nodejs-ts-client/package.json" />
+        <command value="run" />
+        <scripts>
+          <script value="build" />
+        </scripts>
+        <node-interpreter value="project" />
+        <envs />
+      </option>
+      <option name="NpmBeforeRunTask" enabled="true">
+        <package-json value="$PROJECT_DIR$/package.json" />
+        <command value="install" />
+        <node-interpreter value="project" />
+        <envs />
+      </option>
+    </method>
+  </configuration>
+</component>

@@ -2,32 +2,86 @@ import * as emitter from "emitter-io";
 import { EmitterEvents } from "emitter-io";
 
 import { FeatureConfiguration, FlagsioOptions, Target } from "./models";
-import { calculateProbability, evaluateCondition } from "./utilities";
+import { calculateProbability, delay, evaluateCondition } from "./utilities";
 
 const featureConfigurations: FeatureConfiguration[] = [];
 
 let printDebugLogs = false;
-let connecting = false;
-let connected = false;
 
+enum ConnectionStatus {
+    pending,
+    connecting,
+    disconnected,
+    ready
+}
+
+let connectionStatus: ConnectionStatus = ConnectionStatus.pending;
+
+let logger: (...data: any[]) => void;
+
+const defaultOptions: FlagsioOptions = {
+    host: "io.flagsio.com",
+    port: 443,
+    secure: true,
+    debug: false,
+    logger: consoleLog,
+};
+
+export interface ISdkClient {
+
+    /*!
+     * Helper function that will return when a connection is ready
+     */
+    waitForConnection: () => Promise<void>;
+}
+
+/*!
+ * Creates and connects a FlagsioSdk client.
+ *
+ * A connection attempt will be made immediately upon calling this function.
+ * To determine when it is ready to use, await [[ISdkClient.waitForConnection]], 
+ * or add an optional event listener for the `"ready"` event using [[FlagsioOptions.on]].
+ *
+ *     // usage:
+ *     import { connect } from 'flagsio-js-sdk';
+ *     const client = connect(envId, apiKey, options);
+ *
+ * @param environmentId
+ *   The environment Id.
+ * @param apiKey
+ *   The environment api key.
+ * @param options
+ *   Optional client configuration.
+ * @return
+ *   The new client instance.
+ */
 function connect(
     environmentId: string,
     apiKey: string,
-    options: FlagsioOptions = {
-        host: "io.flagsio.com",
-        port: 443,
-        secure: true,
-        debug: false,
-    },
-) {
-    if (connecting || connected) {
+    options?: Partial<FlagsioOptions>): ISdkClient {
 
-        debugLog(`Client already ${connecting ? "connecting" : "connected"}`);
-        return;
+    options = {
+        ...options,
+        host: options?.host ?? defaultOptions.host,
+        port: options?.port ?? defaultOptions.port,
+        secure: options?.secure !== undefined ? options.secure : defaultOptions.secure,
+        debug: options?.debug !== undefined ? options.debug : defaultOptions.debug,
+        logger: options?.logger ?? defaultOptions.logger,
+    };
+
+    logger = options.logger ?? consoleLog;
+
+    if (connectionStatus === ConnectionStatus.connecting || connectionStatus === ConnectionStatus.ready) {
+
+        logger?.(`Client already ${connectionStatus === ConnectionStatus.connecting ? "connecting" : "connected"}`);
+
+        return {
+            waitForConnection: waitForConnection,
+        };
     }
-    connecting = true;
+    setConnectionStatus(ConnectionStatus.connecting, options);
 
-    printDebugLogs = options.debug;
+    printDebugLogs = options.debug ?? false;
 
     const client = emitter.connect({
         host: options.host,
@@ -35,15 +89,14 @@ function connect(
         secure: options.secure,
     }, () => {
 
-        debugLog("Client connected");
-        connecting = false;
-        connected = true;
+        logger?.("Client connected");
+        setConnectionStatus(ConnectionStatus.ready, options);
     });
 
     client.on(EmitterEvents.disconnect, function (msg) {
 
-        debugLog("Client disconnected");
-        connected = false;
+        logger?.("Client disconnected", msg);
+        setConnectionStatus(ConnectionStatus.disconnected, options);
     });
 
     client.on(EmitterEvents.message, function (msg) {
@@ -56,7 +109,7 @@ function connect(
 
         cacheConfiguration(configuration);
 
-        debugLog("Feature configurations updated:", JSON.stringify(featureConfigurations, null, 4));
+        logger?.("Feature configurations updated:", JSON.stringify(featureConfigurations, null, 4));
     });
 
     client.subscribe({
@@ -71,6 +124,10 @@ function connect(
         name: "0",
         subscribe: true,
     });
+
+    return {
+        waitForConnection: waitForConnection,
+    };
 }
 
 function isFeatureConfiguration(obj: any): obj is FeatureConfiguration {
@@ -99,6 +156,25 @@ function cacheConfiguration(featureConfiguration: FeatureConfiguration) {
     }
 }
 
+/*!
+ * Evaluates if a feature is enabled based on its configuration.
+ *
+ * Note that this function will reuse the same connection created in your app's entry point.
+ * There is no need to pass around a reference to it or the client.
+ * 
+ *     // usage:
+ *     import { hasFeature } from 'flagsio-js-sdk';
+ *     const isEnabled = hasFeature("example-feature", false);
+ * 
+ * @param featureId
+ *   The feature Id.
+ * @param defaultValue
+ *   A fall-back value in case the SDK loses connection or can't find a configuration for the given feature id.
+ * @param userAttributes
+ *   Optional user attributes.
+ * @return
+ *   The state of the feature.
+ */
 function hasFeature(
     featureId: string,
     defaultValue: boolean,
@@ -107,17 +183,17 @@ function hasFeature(
 
     const configuration = featureConfigurations.find(d => d.Key === featureId);
 
-    debugLog(`Evaluating configuration for feature '${featureId}' :`, configuration);
+    logger?.(`Evaluating configuration for feature '${featureId}' :`, configuration);
 
     if (!configuration) {
 
-        debugLog(`Returning default value for feature '${featureId}' :`, defaultValue);
+        logger?.(`Returning default value for feature '${featureId}' :`, defaultValue);
         return defaultValue;
     }
 
     if (configuration.TargetId === Target.All) {
 
-        debugLog(`Returning enabled for feature '${featureId}' :`, configuration.Enabled);
+        logger?.(`Returning enabled for feature '${featureId}' :`, configuration.Enabled);
         return configuration.Enabled;
     }
 
@@ -127,7 +203,7 @@ function hasFeature(
 
         const result = calculateProbability(percentage);
 
-        debugLog(`Returning percentage probability for feature '${featureId}' :`, result);
+        logger?.(`Returning percentage probability for feature '${featureId}' :`, result);
         return result;
     }
 
@@ -147,7 +223,7 @@ function hasFeature(
 
                     if (evaluateCondition(condition, attributeValue) != undefined) {
 
-                        debugLog(`Returning rule value for feature '${featureId}' :`, rule);
+                        logger?.(`Returning rule value for feature '${featureId}' :`, rule);
                         return rule.Value;
                     }
                 }
@@ -156,17 +232,41 @@ function hasFeature(
 
         const defaultRuleValue = configuration.TargetingRules.find(r => r.IsDefault)?.Value ?? defaultValue;
 
-        debugLog(`Returning default rule value for feature '${featureId}' :`, defaultRuleValue);
+        logger?.(`Returning default rule value for feature '${featureId}' :`, defaultRuleValue);
         return defaultRuleValue;
     }
 
     return false;
 }
 
-function debugLog(...data: any[]) {
+function consoleLog(...data: any[]) {
 
     if (printDebugLogs) {
         console.log(...data);
+    }
+}
+
+function setConnectionStatus(status: ConnectionStatus, options?: Partial<FlagsioOptions>) {
+    connectionStatus = status;
+    options?.on?.(ConnectionStatus[status]);
+}
+
+async function waitForConnection() {
+    const timeout = 60_000;
+    const ms = 50;
+    let count = 0;
+
+    while (connectionStatus === ConnectionStatus.pending
+    || connectionStatus === ConnectionStatus.connecting) {
+
+        await delay(ms);
+        count += ms;
+
+        if (count > timeout) {
+
+            logger?.(`Connection timed out after ${count}ms' :`);
+            break;
+        }
     }
 }
 

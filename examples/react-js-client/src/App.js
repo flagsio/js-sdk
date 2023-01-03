@@ -3,7 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import Component from "./Component";
 
-import FlagsioSdk from "flagsio-js-sdk/browser";
+import { connect, hasFeature } from "flagsio-js-sdk/browser";
 
 function App() {
 
@@ -13,21 +13,36 @@ function App() {
         const API_KEY = 'ENTER YOUR API KEY';
 
         // prod
-        FlagsioSdk.connect(ENV_ID, API_KEY);
+        let client = connect(ENV_ID, API_KEY,
+            {
+                // debug: true,
+                // logger:(...data:object[])=>{
+                //      console.log("Client: ",data)
+                // },
+                // on: (status: string) => {
+                //     console.log("Status:", status);
+                // },
+            });
 
         // local dev
-        // FlagsioSdk.connect(ENV_ID, API_KEY, {
+        // let client = connect(ENV_ID, API_KEY, {
         //     host: "127.0.0.1",
         //     port: 8080,
         //     secure: false,
-        //     debug: false,
+        //     debug: true,
         // });
+
+        // optional callback
+        // client.waitForConnection()
+        //     .then(() => {
+        //         console.log("'waitForConnection' callback");
+        //     });
 
         let trueCount = 0;
         let falseCount = 0;
 
         setInterval(() => {
-            const enabled = FlagsioSdk.hasFeature("simple-flag", false);
+            const enabled = hasFeature("simple-flag", false);
 
             if (enabled) {
                 trueCount++;

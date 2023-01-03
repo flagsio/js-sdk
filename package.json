@@ -1,12 +1,12 @@
 {
     "name": "@flagsio/js-sdk",
-    "version": "0.1.5",
+    "version": "0.1.6",
     "description": "Flagsio JavaScript SDK",
     "author": "",
     "license": "Apache-2.0",
-    "main": "./dist/index.js",
-    "browser": "./dist/browser.js",
-    "types": "./dist/index.d.ts",
+    "main": "index.js",
+    "browser": "browser.js",
+    "types": "index.d.ts",
     "publishConfig": {
         "access": "public"
     },
