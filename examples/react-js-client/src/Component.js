@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 
-import FlagsioSdk from "@flagsio/flagsio-sdk/browser";
+import FlagsioSdk from "@flagsio/js-sdk/browser";
+const { hasFeature } = FlagsioSdk;
 
 function App() {
 
@@ -12,7 +13,7 @@ function App() {
         let falseCount = 0;
 
         setInterval(() => {
-            const v = FlagsioSdk.hasFeature("simple-flag", false);
+            const v = hasFeature("simple-flag", false);
 
             if (v) {
                 trueCount++;
