@@ -17,5 +17,10 @@
     /*!
      * Optional connection status callback function.
      */
-    on?: (status: string) => void;
+    onConnectionStatusChanged?: (status: string) => void;
+    
+    /*!
+     * Optional feature updated callback function.
+     */
+    onFeatureUpdated?: (featureId: string) => void;
 }

@@ -1,21 +1,28 @@
-//const FlagsioSdk = require("flagsio-js-sdk");
-import { connect, hasFeature } from "flagsio-js-sdk";
+
+import { connect, hasFeature } from "@flagsio/js-sdk";
 
 try {
-
-    const ENV_ID = "d026341c-7370-48d5-bbf6-f110209c576c";
-    const API_KEY = "Z6NDQqOS9AjBuJJcDPSBQvpf2LymK_C2";
+    const ENV_ID = 'ENTER YOUR ENVIRONMENT ID';
+    const API_KEY = 'ENTER YOUR API KEY';
 
     // prod    
-    let client = connect(ENV_ID, API_KEY, {
-        // debug: true,
-        // logger:(...data:object[])=>{
-        //      console.log("Client: ",data)
-        // },
-        // on: (status: string) => {
-        //     console.log("Status:", status);
-        // },
-    });
+    let client = connect(ENV_ID, API_KEY,
+        {
+            // debug: true,
+            // logger:(...data:object[])=>{
+            //      console.log("Client: ",data)
+            // },
+
+            // onConnectionStatusChanged: (status: string) => {
+            //     console.log("Status:", status);
+            // },
+
+            // onFeatureUpdated: (featureId: string) => {
+            //
+            //     const enabled = hasFeature(featureId, false);
+            //     console.log("Feature updated:", featureId, enabled);
+            // },
+        });
 
     // local dev
     // let client = connect(ENV_ID, API_KEY, {

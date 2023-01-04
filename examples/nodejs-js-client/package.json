@@ -8,6 +8,6 @@
     "name": ""
   },
   "dependencies": {
-    "flagsio-js-sdk": "file:../../dist"
+    "@flagsio/js-sdk": "file:../../dist"
   }
 }

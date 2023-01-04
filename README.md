@@ -112,7 +112,7 @@ Import SDK
 
 ```js
 // /browser path contains a polyfilled bundle of the SDK for browsers 
-import {connect, hasFeature} from "@flagsio/js-sdk/browser"; 
+import FlagsioSdk from "@flagsio/js-sdk/browser";
 ```
 
 Connect once in the entry point of your app
@@ -123,24 +123,31 @@ Connect once in the entry point of your app
 const ENV_ID = 'ENTER YOUR ENVIRONMENT ID';
 const API_KEY = 'ENTER YOUR API KEY';
 
-connect(ENV_ID, API_KEY, {
+FlagsioSdk.connect(ENV_ID, API_KEY, {
     // optional configs
     debug: true, // enabe to print logs in the console
     logger: (msg) => {
         // optional logger override
         console.debug(msg);
     },
-    on: (status: string) => {
+    onConnectionStatusChanged: (status: string) => {
         // optional connection status callback
         console.log("Connection status:", status);
-    }
+    },
+    onFeatureUpdated: (featureId: string) => {
+
+        // optional feature updated callback
+        // can immediately evaluate the new feature state
+        const enabled = FlagsioSdk.hasFeature(featureId, false);
+        console.log("Feature updated:", featureId, enabled);
+    },
 });
 ```
 
 Anywhere in your application
 
 ```js
-const isEnabled = hasFeature("example-feature", false);
+const isEnabled = FlagsioSdk.hasFeature("example-feature", false);
 
 if (isEnabled) {
     // do something when example feature is enabled
@@ -155,7 +162,7 @@ Import SDK
 
 ```js
 // root path contains a bundle of the SDK for NodeJS 
-import {connect, hasFeature} from "@flagsio/js-sdk"; 
+import FlagsioSdk from "@flagsio/js-sdk"; 
 ```
 
 Connect once in the entry point of your app
@@ -166,24 +173,31 @@ Connect once in the entry point of your app
 const ENV_ID = 'ENTER YOUR ENVIRONMENT ID';
 const API_KEY = 'ENTER YOUR API KEY';
 
-connect(ENV_ID, API_KEY, {
+FlagsioSdk.connect(ENV_ID, API_KEY, {
     // optional configs
     debug: true, // enabe to print logs in the console
     logger: (msg) => {
         // optional logger override
         console.debug(msg);
     },
-    on: (status: string) => {
+    onConnectionStatusChanged: (status: string) => {
         // optional connection status callback
         console.log("Connection status:", status);
-    }
+    },
+    onFeatureUpdated: (featureId: string) => {
+
+        // optional feature updated callback
+        // can immediately evaluate the new feature state
+        const enabled = FlagsioSdk.hasFeature(featureId, false);
+        console.log("Feature updated:", featureId, enabled);
+    },
 });
 ```
 
 Anywhere in your application
 
 ```js
-const isEnabled = hasFeature("example-feature", false);
+const isEnabled = FlagsioSdk.hasFeature("example-feature", false);
 
 if (isEnabled) {
     // do something when example feature is enabled

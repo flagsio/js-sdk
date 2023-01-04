@@ -7,6 +7,8 @@ import { calculateProbability, delay, evaluateCondition } from "./utilities";
 const featureConfigurations: FeatureConfiguration[] = [];
 
 let printDebugLogs = false;
+let featureUpdatedCallback: ((featureId: string) => void) | undefined;
+let connectionStatusChangedCallback: ((status: string) => void) | undefined;
 
 enum ConnectionStatus {
     pending,
@@ -69,7 +71,9 @@ function connect(
         logger: options?.logger ?? defaultOptions.logger,
     };
 
-    logger = options.logger ?? consoleLog;
+    logger = options?.logger ?? consoleLog;
+    featureUpdatedCallback = options?.onFeatureUpdated ?? undefined;
+    connectionStatusChangedCallback = options?.onConnectionStatusChanged ?? undefined;
 
     if (connectionStatus === ConnectionStatus.connecting || connectionStatus === ConnectionStatus.ready) {
 
@@ -79,7 +83,7 @@ function connect(
             waitForConnection: waitForConnection,
         };
     }
-    setConnectionStatus(ConnectionStatus.connecting, options);
+    setConnectionStatus(ConnectionStatus.connecting);
 
     printDebugLogs = options.debug ?? false;
 
@@ -90,13 +94,13 @@ function connect(
     }, () => {
 
         logger?.("Client connected");
-        setConnectionStatus(ConnectionStatus.ready, options);
+        setConnectionStatus(ConnectionStatus.ready);
     });
 
     client.on(EmitterEvents.disconnect, function (msg) {
 
         logger?.("Client disconnected", msg);
-        setConnectionStatus(ConnectionStatus.disconnected, options);
+        setConnectionStatus(ConnectionStatus.disconnected);
     });
 
     client.on(EmitterEvents.message, function (msg) {
@@ -142,6 +146,8 @@ function cacheConfiguration(featureConfiguration: FeatureConfiguration) {
         // remove if deleted
         if (featureConfiguration.Deleted) {
             featureConfigurations.splice(index, 1);
+
+            featureUpdatedCallback?.(featureConfiguration.Key);
             return;
         }
 
@@ -154,6 +160,8 @@ function cacheConfiguration(featureConfiguration: FeatureConfiguration) {
     } else {
         featureConfigurations.push(featureConfiguration);
     }
+
+    featureUpdatedCallback?.(featureConfiguration.Key);
 }
 
 /*!
@@ -246,9 +254,9 @@ function consoleLog(...data: any[]) {
     }
 }
 
-function setConnectionStatus(status: ConnectionStatus, options?: Partial<FlagsioOptions>) {
+function setConnectionStatus(status: ConnectionStatus) {
     connectionStatus = status;
-    options?.on?.(ConnectionStatus[status]);
+    connectionStatusChangedCallback?.(ConnectionStatus[status]);
 }
 
 async function waitForConnection() {

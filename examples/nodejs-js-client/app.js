@@ -1,6 +1,7 @@
 'use strict';
 
-import { connect, hasFeature } from "flagsio-js-sdk";
+import FlagsioSdk from "@flagsio/js-sdk";
+const { connect, hasFeature } = FlagsioSdk;
 
 try {
     const ENV_ID = 'ENTER YOUR ENVIRONMENT ID';
@@ -10,11 +11,18 @@ try {
     let client = connect(ENV_ID, API_KEY,
         {
             // debug: true,
-            // logger:(...data:object[])=>{
-            //      console.log("Client: ",data)
+            // logger: (...data) => {
+            //     console.log("Client: ", data)
             // },
-            // on: (status: string) => {
+
+            // onConnectionStatusChanged: (status) => {
             //     console.log("Status:", status);
+            // },
+            
+            // onFeatureUpdated: (featureId) => {
+            //
+            //     const enabled = hasFeature(featureId, false);
+            //     console.log("Feature updated:", featureId, enabled);
             // },
         });
 
@@ -31,8 +39,8 @@ try {
     //     .then(() => {
     //         console.log("'waitForConnection' callback");
     //     });
-    
-    
+
+
     let trueCount = 0;
     let falseCount = 0;
 

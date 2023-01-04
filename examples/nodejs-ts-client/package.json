@@ -18,6 +18,6 @@
     "typescript": "^4.0.5"
   },
   "dependencies": {
-    "flagsio-js-sdk": "file:../../dist"
+    "@flagsio/js-sdk": "file:../../dist"
   }
 }

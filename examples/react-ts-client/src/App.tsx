@@ -3,7 +3,7 @@ import logo from "./logo.svg";
 import "./App.css";
 import Component from "./Component";
 
-import { connect, hasFeature } from "flagsio-js-sdk/browser";
+import { connect, hasFeature } from "@flagsio/js-sdk/browser";
 
 function App() {
 
@@ -19,8 +19,15 @@ function App() {
                 // logger:(...data:object[])=>{
                 //      console.log("Client: ",data)
                 // },
-                // on: (status: string) => {
+                
+                // onConnectionStatusChanged: (status: string) => {
                 //     console.log("Status:", status);
+                // },
+                
+                // onFeatureUpdated: (featureId: string) => {
+                //
+                //     const enabled = hasFeature(featureId, false);
+                //     console.log("Feature updated:", featureId, enabled);
                 // },
             });
 
