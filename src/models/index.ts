@@ -3,4 +3,4 @@ export * from "./Condition";
 export * from "./Percentage";
 export * from "./Rule";
 export * from "./Target";
-export * from "./FlagsioOptions";
+export * from "./ClientOptions";

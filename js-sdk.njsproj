@@ -64,7 +64,7 @@
     </ItemGroup>
     <ItemGroup>
         <Script Include="src\models\Condition.ts" />
-        <Script Include="src\models\FlagsioOptions.ts" />
+        <Script Include="src\models\ClientOptions.ts" />
         <Script Include="src\models\FeatureConfiguration.ts" />
         <Script Include="src\models\index.ts" />
         <Script Include="src\models\Percentage.ts" />

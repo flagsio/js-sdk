@@ -1,13 +1,13 @@
 import * as emitter from "emitter-io";
 import { EmitterEvents } from "emitter-io";
 
-import { FeatureConfiguration, FlagsioOptions, Target } from "./models";
+import { FeatureConfiguration, ClientOptions, Target } from "./models";
 import { calculateProbability, delay, evaluateCondition } from "./utilities";
 
 const featureConfigurations: FeatureConfiguration[] = [];
 
 let printDebugLogs = false;
-let featureUpdatedCallback: ((featureId: string) => void) | undefined;
+let featureUpdatedCallback: ((featureKey: string) => void) | undefined;
 let connectionStatusChangedCallback: ((status: string) => void) | undefined;
 
 enum ConnectionStatus {
@@ -21,7 +21,7 @@ let connectionStatus: ConnectionStatus = ConnectionStatus.pending;
 
 let logger: (...data: any[]) => void;
 
-const defaultOptions: FlagsioOptions = {
+const defaultOptions: ClientOptions = {
     host: "io.flagsio.com",
     port: 443,
     secure: true,
@@ -29,38 +29,38 @@ const defaultOptions: FlagsioOptions = {
     logger: consoleLog,
 };
 
-export interface ISdkClient {
+interface ISdkClient {
 
     /*!
-     * Helper function that will return when a connection is ready
+     * Helper function that will return when the connection is ready.
      */
     waitForConnection: () => Promise<void>;
 }
 
 /*!
- * Creates and connects a FlagsioSdk client.
+ * Creates and connects a Flagsio SDK client.
  *
- * A connection attempt will be made immediately upon calling this function.
+ * A connection attempt will be made when calling this function.
  * To determine when it is ready to use, await [[ISdkClient.waitForConnection]], 
- * or add an optional event listener for the `"ready"` event using [[FlagsioOptions.on]].
+ * or add an optional event listener for the `"ready"` event using [[FlagsioOptions.onConnectionStatusChanged]].
  *
  *     // usage:
- *     import { connect } from 'flagsio-js-sdk';
- *     const client = connect(envId, apiKey, options);
+ *     import { connect } from 'flagsio/js-sdk';
+ *     const client = connect(envId, envKey, options);
  *
  * @param environmentId
  *   The environment Id.
- * @param apiKey
- *   The environment api key.
+ * @param environmentKey
+ *   The environment key.
  * @param options
- *   Optional client configuration.
+ *   Optional client configurations.
  * @return
- *   The new client instance.
+ *   A new client instance.
  */
 function connect(
     environmentId: string,
-    apiKey: string,
-    options?: Partial<FlagsioOptions>): ISdkClient {
+    environmentKey: string,
+    options?: Partial<ClientOptions>): ISdkClient {
 
     options = {
         ...options,
@@ -117,12 +117,12 @@ function connect(
     });
 
     client.subscribe({
-        key: apiKey,
+        key: environmentKey,
         channel: `FeatureFlags/${environmentId}/`,
     });
 
     client.link({
-        key: apiKey,
+        key: environmentKey,
         channel: `FeatureFlags/${environmentId}/`,
         private: true,
         name: "0",
@@ -165,43 +165,43 @@ function cacheConfiguration(featureConfiguration: FeatureConfiguration) {
 }
 
 /*!
- * Evaluates if a feature is enabled based on its configuration.
+ * Evaluates if a feature is enabled based on its environment configuration.
  *
- * Note that this function will reuse the same connection created in your app's entry point.
- * There is no need to pass around a reference to it or the client.
+ * Note that this function will reuse the cached feature configurations received from our service.
+ * There is no need to store or pass around a reference to the client.
  * 
  *     // usage:
- *     import { hasFeature } from 'flagsio-js-sdk';
- *     const isEnabled = hasFeature("example-feature", false);
+ *     import { hasFeature } from '@flagsio/js-sdk';
+ *     const isEnabled = hasFeature("example-feature-key", false);
  * 
- * @param featureId
- *   The feature Id.
+ * @param featureKey
+ *   The feature key.
  * @param defaultValue
- *   A fall-back value in case the SDK loses connection or can't find a configuration for the given feature id.
+ *   A fall-back value in case the SDK client loses connection or can't find a configuration for the given feature key.
  * @param userAttributes
  *   Optional user attributes.
  * @return
  *   The state of the feature.
  */
 function hasFeature(
-    featureId: string,
+    featureKey: string,
     defaultValue: boolean,
     userAttributes: {[key: string]: string} | undefined = undefined,
 ): boolean {
 
-    const configuration = featureConfigurations.find(d => d.Key === featureId);
+    const configuration = featureConfigurations.find(d => d.Key === featureKey);
 
-    logger?.(`Evaluating configuration for feature '${featureId}' :`, configuration);
+    logger?.(`Evaluating configuration for feature '${featureKey}' :`, configuration);
 
     if (!configuration) {
 
-        logger?.(`Returning default value for feature '${featureId}' :`, defaultValue);
+        logger?.(`Returning default value for feature '${featureKey}' :`, defaultValue);
         return defaultValue;
     }
 
     if (configuration.TargetId === Target.All) {
 
-        logger?.(`Returning enabled for feature '${featureId}' :`, configuration.Enabled);
+        logger?.(`Returning enabled for feature '${featureKey}' :`, configuration.Enabled);
         return configuration.Enabled;
     }
 
@@ -211,7 +211,7 @@ function hasFeature(
 
         const result = calculateProbability(percentage);
 
-        logger?.(`Returning percentage probability for feature '${featureId}' :`, result);
+        logger?.(`Returning percentage probability for feature '${featureKey}' :`, result);
         return result;
     }
 
@@ -231,7 +231,7 @@ function hasFeature(
 
                     if (evaluateCondition(condition, attributeValue) != undefined) {
 
-                        logger?.(`Returning rule value for feature '${featureId}' :`, rule);
+                        logger?.(`Returning rule value for feature '${featureKey}' :`, rule);
                         return rule.Value;
                     }
                 }
@@ -240,7 +240,7 @@ function hasFeature(
 
         const defaultRuleValue = configuration.TargetingRules.find(r => r.IsDefault)?.Value ?? defaultValue;
 
-        logger?.(`Returning default rule value for feature '${featureId}' :`, defaultRuleValue);
+        logger?.(`Returning default rule value for feature '${featureKey}' :`, defaultRuleValue);
         return defaultRuleValue;
     }
 
@@ -281,6 +281,8 @@ async function waitForConnection() {
 export {
     connect,
     hasFeature,
+    ClientOptions,
+    ISdkClient
 };
 
 export default {

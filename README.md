@@ -39,7 +39,7 @@
     - [Prerequisites](#prerequisites)
     - [Installation](#installation)
     - [Local development](#local-development)
-- [Usage](#usage)
+- [Learn more](#learn-more)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
 - [License](#license)
@@ -50,7 +50,7 @@
 
 ## Overview
 
-[Flagsio](https://www.flagsio.com/) is an easy-to-use, real-time feature management platform that helps teams build
+[Flagsio](https://www.flagsio.com/) is an easy-to-use, remote real-time feature management platform that helps teams build
 better software, faster.
 <br />[Get started](#getting-started) using Flagsio today!
 
@@ -68,8 +68,7 @@ To run any of the example client apps locally follow these steps.
   ```sh
   npm install npm@latest -g
   ```
-* Create a free account at [https://app.flagsio.com/signup](https://app.flagsio.com/signup)
-
+  
 ### Installation
 
 1. Install the SDK package
@@ -102,111 +101,18 @@ To run any of the example client apps locally follow these steps.
 
 
 
-<!-- USAGE EXAMPLES -->
+<!-- LEARN MORE -->
 
-## Usage
+## Learn more
 
-### Browser Client:
+Check out our [documentation](https://docs.flagsio.com/) for more detailed instructions on using Flagsio.
+You can also head straight to the complete [SDK reference page](https://docs.flagsio.com/docs/sdks/overview).
 
-Import SDK
-
-```js
-// /browser path contains a polyfilled bundle of the SDK for browsers 
-import FlagsioSdk from "@flagsio/js-sdk/browser";
-```
-
-Connect once in the entry point of your app
-
-#### `app.js`:
-
-```js
-const ENV_ID = 'ENTER YOUR ENVIRONMENT ID';
-const API_KEY = 'ENTER YOUR API KEY';
-
-FlagsioSdk.connect(ENV_ID, API_KEY, {
-    // optional configs
-    debug: true, // enabe to print logs in the console
-    logger: (msg) => {
-        // optional logger override
-        console.debug(msg);
-    },
-    onConnectionStatusChanged: (status: string) => {
-        // optional connection status callback
-        console.log("Connection status:", status);
-    },
-    onFeatureUpdated: (featureId: string) => {
-
-        // optional feature updated callback
-        // can immediately evaluate the new feature state
-        const enabled = FlagsioSdk.hasFeature(featureId, false);
-        console.log("Feature updated:", featureId, enabled);
-    },
-});
-```
-
-Anywhere in your application
-
-```js
-const isEnabled = FlagsioSdk.hasFeature("example-feature", false);
-
-if (isEnabled) {
-    // do something when example feature is enabled
-} else {
-    // do something else
-}
-```
-
-### NodeJS Client:
-
-Import SDK
-
-```js
-// root path contains a bundle of the SDK for NodeJS 
-import FlagsioSdk from "@flagsio/js-sdk"; 
-```
-
-Connect once in the entry point of your app
-
-#### `app.js`:
-
-```js
-const ENV_ID = 'ENTER YOUR ENVIRONMENT ID';
-const API_KEY = 'ENTER YOUR API KEY';
-
-FlagsioSdk.connect(ENV_ID, API_KEY, {
-    // optional configs
-    debug: true, // enabe to print logs in the console
-    logger: (msg) => {
-        // optional logger override
-        console.debug(msg);
-    },
-    onConnectionStatusChanged: (status: string) => {
-        // optional connection status callback
-        console.log("Connection status:", status);
-    },
-    onFeatureUpdated: (featureId: string) => {
-
-        // optional feature updated callback
-        // can immediately evaluate the new feature state
-        const enabled = FlagsioSdk.hasFeature(featureId, false);
-        console.log("Feature updated:", featureId, enabled);
-    },
-});
-```
-
-Anywhere in your application
-
-```js
-const isEnabled = FlagsioSdk.hasFeature("example-feature", false);
-
-if (isEnabled) {
-    // do something when example feature is enabled
-} else {
-    // do something else
-}
-```
-
-*For more examples, please refer to the [Documentation](https://docs.flagsio.com/)*
+For examples of using the SDK in simple client applications, see:
+- [nodejs-js-client](https://github.com/flagsio/js-sdk/tree/main/examples/nodejs-js-client)
+- [nodejs-ts-client](https://github.com/flagsio/js-sdk/tree/main/examples/nodejs-ts-client)
+- [react-js-client](https://github.com/flagsio/js-sdk/tree/main/examples/react-js-client)
+- [react-ts-client](https://github.com/flagsio/js-sdk/tree/main/examples/react-ts-client)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

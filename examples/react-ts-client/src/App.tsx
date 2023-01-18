@@ -8,12 +8,8 @@ import { connect, hasFeature } from "@flagsio/js-sdk/browser";
 function App() {
 
     useEffect(() => {
-
-        const ENV_ID = 'ENTER YOUR ENVIRONMENT ID';
-        const API_KEY = 'ENTER YOUR API KEY';
-
         // prod
-        let client = connect(ENV_ID, API_KEY,
+        let client = connect("ENVIRONMENT_ID", "ENVIRONMENT_KEY",
             {
                 // debug: true,
                 // logger:(...data:object[])=>{
@@ -24,15 +20,15 @@ function App() {
                 //     console.log("Status:", status);
                 // },
                 
-                // onFeatureUpdated: (featureId: string) => {
+                // onFeatureUpdated: (featureKey: string) => {
                 //
-                //     const enabled = hasFeature(featureId, false);
-                //     console.log("Feature updated:", featureId, enabled);
+                //     const enabled = hasFeature(featureKey, false);
+                //     console.log("Feature updated:", featureKey, enabled);
                 // },
             });
 
         // local dev
-        // let client = connect(ENV_ID, API_KEY, {
+        // let client = connect("ENVIRONMENT_ID", "ENVIRONMENT_KEY", {
         //     host: "127.0.0.1",
         //     port: 8080,
         //     secure: false,
